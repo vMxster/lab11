@@ -24,9 +24,6 @@ public final class AnotherConcurrentGUI extends JFrame {
     private final JButton up;
     private final JButton down;
 
-    /**
-     * Builds a new CGUI.
-     */
     public AnotherConcurrentGUI() {
         super();
         this.display = new JLabel();
@@ -62,7 +59,6 @@ public final class AnotherConcurrentGUI extends JFrame {
         public void run() {
             while (!this.stop) {
                 try {
-                    // The EDT doesn't access `counter` anymore, it doesn't need to be volatile 
                     final var nextText = Integer.toString(this.counter);
                     SwingUtilities.invokeAndWait(() -> AnotherConcurrentGUI.this.display.setText(nextText));
                     if (!downCondition) {
@@ -72,27 +68,20 @@ public final class AnotherConcurrentGUI extends JFrame {
                     }
                     Thread.sleep(100);
                 } catch (InvocationTargetException | InterruptedException ex) {
-                    /*
-                     * This is just a stack trace print, in a real program there
-                     * should be some logging and decent error reporting
-                     */
                     ex.printStackTrace();
                 }
             }
         }
 
-        /**
-         * External command to stop counting.
-         */
-        public synchronized void stopCounting() {
+        public void stopCounting() {
             this.stop = true;
         }
 
-        public synchronized void setIncrementMode() {
+        public void setIncrementMode() {
             setEnabled(false);
         }
 
-        public synchronized void setDecrementMode() {
+        public void setDecrementMode() {
             setEnabled(true);
         }
 
